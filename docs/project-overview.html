@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book App Project Overview</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #07111f;
+      --panel: rgba(15, 23, 42, 0.82);
+      --panel-border: rgba(148, 163, 184, 0.18);
+      --text: #e2e8f0;
+      --muted: #cbd5e1;
+      --accent: #38bdf8;
+      --accent-strong: #6366f1;
+      --good: #34d399;
+      --warn: #fbbf24;
+      --shadow: 0 20px 45px rgba(15, 23, 42, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(99, 102, 241, 0.2), transparent 24%),
+        linear-gradient(180deg, #0f172a 0%, var(--bg) 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0 72px;
+    }
+
+    .hero {
+      padding: 32px;
+      border: 1px solid var(--panel-border);
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(14, 116, 144, 0.72), rgba(79, 70, 229, 0.76));
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 58rem;
+      color: rgba(226, 232, 240, 0.92);
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    .meta {
+      margin-top: 18px;
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.24);
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      margin-top: 28px;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .card, .section {
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .card {
+      padding: 22px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 700;
+    }
+
+    .metric {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 2.2rem;
+    }
+
+    .metric small {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .card p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .sections {
+      margin-top: 28px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      padding: 24px;
+    }
+
+    .section h2 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+    }
+
+    .section p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+      text-align: left;
+    }
+
+    th {
+      color: #f8fafc;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    td {
+      color: var(--muted);
+    }
+
+    .coverage-row {
+      display: grid;
+      gap: 14px;
+    }
+
+    .coverage-card {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.68);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .coverage-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.18);
+      overflow: hidden;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--good), var(--accent));
+    }
+
+    .footnote {
+      margin-top: 14px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      color: #f8fafc;
+      background: rgba(15, 23, 42, 0.65);
+      padding: 0.16rem 0.42rem;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 720px) {
+      main { padding-top: 28px; }
+      .hero, .section, .card { padding: 20px; }
+      th, td { padding-left: 10px; padding-right: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <span class="eyebrow">Repository telemetry</span>
+      <h1>Book App overview at a glance</h1>
+      <p>
+        This generated page summarizes the current codebase shape across Kotlin and TypeScript,
+        declared automated tests, and the latest available line coverage reports from the backend
+        and frontend test suites.
+      </p>
+      <div class="meta">Generated at <strong>2026-03-20T18:09:04Z</strong></div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <span class="eyebrow">Kotlin production code</span>
+        <div class="metric">39 <small>classes</small></div>
+        <p>28 source files under <code>backend/src/main/kotlin</code>.</p>
+      </article>
+      <article class="card">
+        <span class="eyebrow">TypeScript source code</span>
+        <div class="metric">1 <small>classes</small></div>
+        <p>23 source files under <code>frontend/src</code>.</p>
+      </article>
+      <article class="card">
+        <span class="eyebrow">Automated tests</span>
+        <div class="metric">42 <small>declared tests</small></div>
+        <p>21 test files across backend and frontend suites.</p>
+      </article>
+      <article class="card">
+        <span class="eyebrow">Combined line coverage</span>
+        <div class="metric">86.2% <small>latest report</small></div>
+        <p>896/1040 lines across measured code.</p>
+      </article>
+    </section>
+
+    <section class="sections">
+      <article class="section">
+        <h2>Source inventory</h2>
+        <p>Production code metrics are scanned directly from the repository to keep the overview current.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Language</th>
+              <th>Source files</th>
+              <th>Class declarations</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Kotlin</td>
+              <td>28</td>
+              <td>39</td>
+            </tr>
+            <tr>
+              <td>TypeScript / TSX</td>
+              <td>23</td>
+              <td>1</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="section">
+        <h2>Test inventory</h2>
+        <p>Test counts are based on declared test cases found in source files, so the page stays informative even before reports are inspected.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Suite</th>
+              <th>Test files</th>
+              <th>Declared tests</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Backend Kotlin tests</td>
+              <td>11</td>
+              <td>27</td>
+            </tr>
+            <tr>
+              <td>Frontend TypeScript tests</td>
+              <td>10</td>
+              <td>15</td>
+            </tr>
+            <tr>
+              <td><strong>Total</strong></td>
+              <td><strong>21</strong></td>
+              <td><strong>42</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="section">
+        <h2>Coverage snapshot</h2>
+        <p>The update workflow refreshes backend JaCoCo reports and frontend Vitest coverage before regenerating this page.</p>
+        <div class="coverage-row">
+          <div class="coverage-card">
+            <div class="coverage-head">
+              <strong>Backend line coverage</strong>
+              <span>93.5% · 401/429 lines</span>
+            </div>
+            <div class="bar"><span style="width: 93.5%;"></span></div>
+          </div>
+          <div class="coverage-card">
+            <div class="coverage-head">
+              <strong>Frontend line coverage</strong>
+              <span>81.0% · 495/611 lines</span>
+            </div>
+            <div class="bar"><span style="width: 81.0%;"></span></div>
+          </div>
+          <div class="coverage-card">
+            <div class="coverage-head">
+              <strong>Combined measured line coverage</strong>
+              <span>86.2% · 896/1040 lines</span>
+            </div>
+            <div class="bar"><span style="width: 86.2%;"></span></div>
+          </div>
+        </div>
+        <p class="footnote">Refresh the overview with <code>bash update-overview.sh</code>.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

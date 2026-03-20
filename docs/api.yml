@@ -1,0 +1,321 @@
+openapi: 3.1.0
+info:
+  title: Book App API
+  version: 1.0.0
+  summary: OpenAPI contract for the currently implemented Book App backend endpoints.
+  description: |
+    This document describes the backend API for the Book App project.
+    The current implementation exposes endpoints for the Current Reading feature,
+    allowing users to create, replace, list, update, and delete their active
+    current-reading post.
+
+    For local browser-based development, the backend allows cross-origin requests
+    from local loopback origins such as `http://localhost:*` and
+    `http://127.0.0.1:*`, as configured in the application runtime settings.
+servers:
+  - url: http://localhost:8080
+    description: Local Spring Boot development server.
+tags:
+  - name: CurrentReading
+    description: Active current-reading post operations.
+paths:
+  /api/v1/current-reading-posts:
+    get:
+      tags: [CurrentReading]
+      summary: List active current-reading posts
+      operationId: listCurrentReadingPosts
+      description: Returns the active feed ordered by most recent posting timestamp first.
+      parameters:
+        - $ref: '#/components/parameters/XUserIdHeader'
+        - $ref: '#/components/parameters/XUserNameHeader'
+      responses:
+        '200':
+          description: Active posts returned successfully. An empty array is valid when no posts exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentReadingFeedResponse'
+  /api/v1/current-reading-posts/featured:
+    get:
+      tags: [CurrentReading]
+      summary: List featured books for the main-page hero panel
+      operationId: listFeaturedCurrentReadingBooks
+      description: |
+        Returns up to three distinct books ranked by how many active current-reading posts currently
+        reference them. Books with equal reader counts are ordered deterministically by normalized
+        title.
+      parameters:
+        - $ref: '#/components/parameters/XUserIdHeader'
+        - $ref: '#/components/parameters/XUserNameHeader'
+      responses:
+        '200':
+          description: Featured books returned successfully. An empty array is valid when no posts exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentReadingFeaturedBooksResponse'
+    post:
+      tags: [CurrentReading]
+      summary: Create or replace the authenticated user's active current-reading post
+      operationId: createOrReplaceCurrentReadingPost
+      description: |
+        Creates a new active post when the authenticated user has none. If the user already has an
+        active post, the system replaces that active post with the submitted title and rating.
+      parameters:
+        - $ref: '#/components/parameters/XUserIdHeaderRequired'
+        - $ref: '#/components/parameters/XUserNameHeaderRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrentReadingWriteRequest'
+      responses:
+        '201':
+          description: Active post created for a user who did not previously have one.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentReadingPostResponse'
+        '200':
+          description: Existing active post replaced successfully for the authenticated user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentReadingPostResponse'
+        '400':
+          description: Validation failed for book title or rating.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+        '401':
+          description: No authenticated identity context is available.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+  /api/v1/current-reading-posts/me:
+    put:
+      tags: [CurrentReading]
+      summary: Update the authenticated user's existing active current-reading post
+      operationId: updateOwnCurrentReadingPost
+      description: Updates the current user's active post in place. The request does not accept an owner identifier.
+      parameters:
+        - $ref: '#/components/parameters/XUserIdHeaderRequired'
+        - $ref: '#/components/parameters/XUserNameHeaderRequired'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CurrentReadingWriteRequest'
+      responses:
+        '200':
+          description: Active post updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentReadingPostResponse'
+        '400':
+          description: Validation failed for book title or rating.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+        '401':
+          description: No authenticated identity context is available.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+        '404':
+          description: The authenticated user has no active current-reading post to update.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+    delete:
+      tags: [CurrentReading]
+      summary: Delete the authenticated user's active current-reading post
+      operationId: deleteOwnCurrentReadingPost
+      description: Deletes the active post associated with the authenticated user, if present.
+      parameters:
+        - $ref: '#/components/parameters/XUserIdHeaderRequired'
+        - $ref: '#/components/parameters/XUserNameHeaderRequired'
+      responses:
+        '204':
+          description: Active post deleted successfully.
+        '401':
+          description: No authenticated identity context is available.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+        '404':
+          description: The authenticated user has no active current-reading post to delete.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+components:
+  parameters:
+    XUserIdHeader:
+      in: header
+      name: X-User-Id
+      required: false
+      schema:
+        type: string
+      description: Optional owner context used to flag `ownedByCurrentUser` in feed responses.
+    XUserNameHeader:
+      in: header
+      name: X-User-Name
+      required: false
+      schema:
+        type: string
+      description: Optional owner display name accompanying `X-User-Id` in feed requests.
+    XUserIdHeaderRequired:
+      in: header
+      name: X-User-Id
+      required: true
+      schema:
+        type: string
+      description: Required owner identifier for create, update, and delete operations.
+    XUserNameHeaderRequired:
+      in: header
+      name: X-User-Name
+      required: true
+      schema:
+        type: string
+      description: Required owner display name for create, update, and delete operations.
+  schemas:
+    CurrentReadingWriteRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - bookTitle
+        - rating
+      properties:
+        bookTitle:
+          type: string
+          minLength: 1
+          description: Book title entered by the authenticated user. The backend trims surrounding whitespace.
+          examples: ["The Left Hand of Darkness"]
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Whole-number rating on a 1-to-5 scale.
+          examples: [4]
+    CurrentReadingPostResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - postId
+        - bookTitle
+        - rating
+        - ownerUserId
+        - ownerDisplayName
+        - postedAt
+        - updatedAt
+        - ownedByCurrentUser
+      properties:
+        postId:
+          type: string
+          format: uuid
+        bookTitle:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        ownerUserId:
+          type: string
+        ownerDisplayName:
+          type: string
+        postedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        ownedByCurrentUser:
+          type: boolean
+    CurrentReadingFeedResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CurrentReadingPostResponse'
+    FeaturedCurrentReadResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - rank
+        - bookTitle
+        - readerCount
+      properties:
+        rank:
+          type: integer
+          minimum: 1
+        bookTitle:
+          type: string
+          description: Canonical display title for the featured book.
+        readerCount:
+          type: integer
+          minimum: 1
+          description: Number of active current-reading posts for the featured book.
+    CurrentReadingFeaturedBooksResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - featuredBooks
+      properties:
+        featuredBooks:
+          type: array
+          maxItems: 3
+          items:
+            $ref: '#/components/schemas/FeaturedCurrentReadResponse'
+    ProblemResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - title
+        - status
+        - detail
+        - errorCode
+      properties:
+        type:
+          type: string
+          format: uri-reference
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        errorCode:
+          type: string
+        fieldErrors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldError'
+    FieldError:
+      type: object
+      additionalProperties: false
+      required:
+        - field
+        - message
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+

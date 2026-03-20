@@ -1,0 +1,22 @@
+@startuml
+actor Visitor
+participant Frontend as "Main Page"
+participant Backend as "Current Reading API"
+participant Application as "Featured Reads Use Case"
+participant Persistence as "Featured Reads Query Repository"
+participant Database as "current_reading_posts"
+
+Visitor -> Frontend: Open main page
+Frontend -> Backend: GET /api/v1/current-reading-posts/featured
+Backend -> Application: list featured books
+Application -> Persistence: load active current-reading titles
+Persistence -> Database: select active current-reading posts
+Database --> Persistence: active titles
+Persistence --> Application: active titles
+Application -> Application: normalize titles and aggregate reader counts
+Application -> Application: rank top 3 books deterministically
+Application --> Backend: featured books
+Backend --> Frontend: 200 Featured books response
+Frontend --> Visitor: Render hero panel above feed
+@enduml
+
