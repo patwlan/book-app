@@ -40,48 +40,71 @@ export function CurrentReadingForm({
   };
 
   return (
-    <form className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm" noValidate onSubmit={form.handleSubmit(handleSubmit)}>
-      <div>
-        <label htmlFor="bookTitle" className="mb-2 block text-sm font-medium text-slate-700">
-          Book title
-        </label>
-        <input
-          id="bookTitle"
-          type="text"
-          {...form.register('bookTitle')}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none"
-          placeholder="The Left Hand of Darkness"
-        />
-        {form.formState.errors.bookTitle ? (
-          <p className="mt-2 text-sm text-rose-600">{form.formState.errors.bookTitle.message}</p>
-        ) : null}
+    <form className="panel-surface space-y-6 p-6 sm:p-8" noValidate onSubmit={form.handleSubmit(handleSubmit)}>
+      <div className="space-y-3">
+        <p className="section-kicker">Your update</p>
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+            {mode === 'edit' ? 'Edit your current read' : 'Share your current read'}
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            Add the book you are currently reading and leave a quick rating for everyone else.
+          </p>
+        </div>
       </div>
 
-      <div>
-        <label htmlFor="rating" className="mb-2 block text-sm font-medium text-slate-700">
-          Rating
-        </label>
-        <input
-          id="rating"
-          type="number"
-          min={1}
-          max={5}
-          {...form.register('rating', { valueAsNumber: true })}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none"
-        />
-        {form.formState.errors.rating ? (
-          <p className="mt-2 text-sm text-rose-600">{form.formState.errors.rating.message}</p>
-        ) : null}
+      <div className="space-y-5">
+        <div>
+          <label htmlFor="bookTitle" className="mb-2 block text-sm font-medium text-slate-700">
+            Book title
+          </label>
+          <input
+            id="bookTitle"
+            type="text"
+            {...form.register('bookTitle')}
+            className="input-field"
+            placeholder="The Left Hand of Darkness"
+          />
+          {form.formState.errors.bookTitle ? (
+            <p className="mt-2 text-sm text-rose-600">{form.formState.errors.bookTitle.message}</p>
+          ) : null}
+        </div>
+
+        <div>
+          <label htmlFor="rating" className="mb-2 block text-sm font-medium text-slate-700">
+            Rating
+          </label>
+          <input
+            id="rating"
+            type="number"
+            min={1}
+            max={5}
+            {...form.register('rating', { valueAsNumber: true })}
+            className="input-field"
+          />
+          <p className="mt-2 text-sm text-slate-500">Use a scale from 1 to 5.</p>
+          {form.formState.errors.rating ? (
+            <p className="mt-2 text-sm text-rose-600">{form.formState.errors.rating.message}</p>
+          ) : null}
+        </div>
       </div>
 
-      {statusMessage ? <p className="text-sm font-medium text-emerald-600">{statusMessage}</p> : null}
-      {errorMessage ? <p className="text-sm font-medium text-rose-600">{errorMessage}</p> : null}
+      {statusMessage ? (
+        <div className="rounded-[22px] border border-emerald-100 bg-emerald-50/90 p-4 text-sm font-medium text-emerald-700">
+          {statusMessage}
+        </div>
+      ) : null}
+      {errorMessage ? (
+        <div className="rounded-[22px] border border-rose-100 bg-rose-50/90 p-4 text-sm font-medium text-rose-700">
+          {errorMessage}
+        </div>
+      ) : null}
 
       <div className="flex flex-wrap gap-3">
         <button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
+          className="primary-button"
         >
           {form.formState.isSubmitting ? 'Saving…' : submitLabel}
         </button>
@@ -89,7 +112,7 @@ export function CurrentReadingForm({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-slate-300 px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-100"
+            className="secondary-button"
           >
             Cancel
           </button>

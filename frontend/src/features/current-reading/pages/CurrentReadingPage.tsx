@@ -59,14 +59,14 @@ export function CurrentReadingPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 lg:space-y-10">
       <CurrentReadingHeroPanel
         items={featuredReadsQuery.data?.featuredBooks ?? []}
         isLoading={featuredReadsQuery.isLoading}
         hasError={featuredReadsQuery.isError}
       />
 
-      <div className="grid gap-8 lg:grid-cols-[360px_minmax(0,1fr)]">
+      <div className="grid gap-8 lg:grid-cols-[minmax(320px,380px)_minmax(0,1fr)]">
         <section className="space-y-6">
           <CurrentReadingForm
             mode={editingPost ? 'edit' : 'create'}
@@ -78,21 +78,39 @@ export function CurrentReadingPage() {
           />
 
           {ownPost && !editingPost ? (
-            <div className="rounded-xl border border-indigo-100 bg-indigo-50 p-4 text-sm text-indigo-800">
+            <div className="panel-subtle border-sky-100 bg-sky-50/80 p-4 text-sm leading-6 text-sky-900">
               Posting again will replace your existing current-read entry.
             </div>
           ) : null}
 
-          {pageError ? <p className="text-sm font-medium text-rose-600">{pageError}</p> : null}
+          {pageError ? (
+            <div className="rounded-[22px] border border-rose-100 bg-rose-50/90 p-4 text-sm font-medium text-rose-700">
+              {pageError}
+            </div>
+          ) : null}
         </section>
 
-        <section className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold">Current reading feed</h2>
-            <p className="text-sm text-slate-600">See what everyone is currently reading and how they rate it.</p>
+        <section className="panel-surface space-y-5 p-6 sm:p-8">
+          <div className="space-y-3">
+            <p className="section-kicker">Live feed</p>
+            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold tracking-tight text-slate-950">Current reading feed</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                  See what everyone is currently reading and how they rate it.
+                </p>
+              </div>
+              {feedQuery.data ? (
+                <div className="self-start rounded-full border border-slate-200 bg-slate-50/90 px-4 py-2 text-sm font-medium text-slate-600">
+                  {feedQuery.data.items.length} {feedQuery.data.items.length === 1 ? 'current read' : 'current reads'}
+                </div>
+              ) : null}
+            </div>
           </div>
 
-          {feedQuery.isLoading ? <p className="text-sm text-slate-500">Loading current reads…</p> : null}
+          {feedQuery.isLoading ? (
+            <div className="panel-subtle p-6 text-sm text-slate-500">Loading current reads…</div>
+          ) : null}
 
           {feedQuery.data ? (
             <CurrentReadingFeed

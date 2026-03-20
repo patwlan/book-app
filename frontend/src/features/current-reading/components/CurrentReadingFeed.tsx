@@ -11,7 +11,7 @@ type CurrentReadingFeedProps = {
 export function CurrentReadingFeed({ items, onEdit, onDelete, deletingPostId = null }: CurrentReadingFeedProps) {
   if (items.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-600">
+      <div className="panel-subtle border-dashed p-10 text-center text-slate-600">
         No one has shared a current read yet.
       </div>
     );
