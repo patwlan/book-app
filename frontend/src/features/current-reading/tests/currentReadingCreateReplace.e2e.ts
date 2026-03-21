@@ -35,13 +35,13 @@ test('creates and replaces the current read', async ({ page }) => {
 
   await page.goto('/');
   await page.getByLabel('Book title').fill('Dune');
-  await page.getByLabel('Rating').fill('5');
+  await page.getByRole('radio', { name: '5 out of 5 stars' }).click();
   await page.getByRole('button', { name: 'Share current read' }).click();
 
   await expect(page.getByText('Dune')).toBeVisible();
 
   await page.getByLabel('Book title').fill('Hyperion');
-  await page.getByLabel('Rating').fill('4');
+  await page.getByRole('radio', { name: '4 out of 5 stars' }).click();
   await page.getByRole('button', { name: 'Share current read' }).click();
 
   await expect(page.getByText('Hyperion')).toBeVisible();

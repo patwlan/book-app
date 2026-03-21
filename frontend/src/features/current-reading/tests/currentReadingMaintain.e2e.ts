@@ -59,8 +59,10 @@ test('edits and deletes the owner post', async ({ page }) => {
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Edit' }).click();
+  await expect(page.getByRole('heading', { name: 'Edit your current read' })).toBeVisible();
+  await expect(page.getByLabel('Book title')).toHaveValue('Dune');
   await page.getByLabel('Book title').fill('Project Hail Mary');
-  await page.getByLabel('Rating').fill('4');
+  await page.getByRole('radio', { name: '4 out of 5 stars' }).click();
   await page.getByRole('button', { name: 'Save changes' }).click();
   await expect(page.getByText('Project Hail Mary')).toBeVisible();
 

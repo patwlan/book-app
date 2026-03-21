@@ -18,6 +18,8 @@ servers:
 tags:
   - name: CurrentReading
     description: Active current-reading post operations.
+  - name: Profile
+    description: Owner-scoped profile summary operations.
 paths:
   /api/v1/current-reading-posts:
     get:
@@ -61,6 +63,8 @@ paths:
       description: |
         Creates a new active post when the authenticated user has none. If the user already has an
         active post, the system replaces that active post with the submitted title and rating.
+        Frontend clients may present the rating as a five-star control, but the submitted value
+        remains an integer from 1 to 5.
       parameters:
         - $ref: '#/components/parameters/XUserIdHeaderRequired'
         - $ref: '#/components/parameters/XUserNameHeaderRequired'
@@ -100,7 +104,10 @@ paths:
       tags: [CurrentReading]
       summary: Update the authenticated user's existing active current-reading post
       operationId: updateOwnCurrentReadingPost
-      description: Updates the current user's active post in place. The request does not accept an owner identifier.
+      description: |
+        Updates the current user's active post in place. The request does not accept an owner
+        identifier. Frontend clients may present the rating as a five-star control, but the
+        submitted value remains an integer from 1 to 5.
       parameters:
         - $ref: '#/components/parameters/XUserIdHeaderRequired'
         - $ref: '#/components/parameters/XUserNameHeaderRequired'
@@ -158,6 +165,75 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemResponse'
+  /api/v1/profile/me:
+    get:
+      tags: [Profile]
+      summary: Get the active user's profile summary
+      operationId: getOwnProfileSummary
+      description: |
+        Returns the active user identity derived from owner-context headers together with the total
+        number of distinct books that user has recorded through current-reading activity.
+      parameters:
+        - $ref: '#/components/parameters/XUserIdHeaderRequired'
+        - $ref: '#/components/parameters/XUserNameHeaderRequired'
+      responses:
+        '200':
+          description: "Profile summary returned successfully. Users without recorded books receive `booksReadCount: 0`."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileSummaryResponse'
+        '401':
+          description: No authenticated identity context is available.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
+  /api/v1/profiles:
+    get:
+      tags: [Profile]
+      summary: List all known reader profile summaries
+      operationId: listProfiles
+      description: |
+        Returns the collection used by the profiles overview page. Each item contains one known
+        reader with the latest persisted display name and the total number of distinct books that
+        reader has recorded through current-reading activity.
+      responses:
+        '200':
+          description: Reader profile summaries returned successfully. An empty array is valid when no summaries exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfilesResponse'
+  /api/v1/profiles/{userId}:
+    get:
+      tags: [Profile]
+      summary: Get one reader's profile summary
+      operationId: getProfileSummaryByUserId
+      description: |
+        Returns the stored profile summary for a known reader, including the latest persisted display
+        name and the total number of distinct books that reader has recorded through current-reading
+        activity.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User identifier of the requested reader profile.
+      responses:
+        '200':
+          description: Requested profile summary returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileSummaryResponse'
+        '404':
+          description: The requested profile is unknown.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemResponse'
 components:
   parameters:
     XUserIdHeader:
@@ -205,7 +281,7 @@ components:
           type: integer
           minimum: 1
           maximum: 5
-          description: Whole-number rating on a 1-to-5 scale.
+          description: Whole-number rating on a 1-to-5 scale. Frontend clients may render this as stars.
           examples: [4]
     CurrentReadingPostResponse:
       type: object
@@ -280,6 +356,34 @@ components:
           maxItems: 3
           items:
             $ref: '#/components/schemas/FeaturedCurrentReadResponse'
+    ProfilesResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileSummaryResponse'
+    ProfileSummaryResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - userId
+        - displayName
+        - booksReadCount
+      properties:
+        userId:
+          type: string
+          description: Active owner-context user identifier.
+        displayName:
+          type: string
+          description: Active owner-context display name.
+        booksReadCount:
+          type: integer
+          minimum: 0
+          description: Total number of distinct books recorded by this user through current-reading activity.
     ProblemResponse:
       type: object
       additionalProperties: false

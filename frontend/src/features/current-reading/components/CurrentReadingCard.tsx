@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom';
 import type { CurrentReadingPost } from '../services/currentReadingApi';
 import { CurrentReadingOwnerActions } from './CurrentReadingOwnerActions';
+import { StarRatingDisplay } from './StarRatingDisplay';
 
 type CurrentReadingCardProps = {
   item: CurrentReadingPost;
@@ -9,18 +11,21 @@ type CurrentReadingCardProps = {
 };
 
 export function CurrentReadingCard({ item, onEdit, onDelete, isDeleting = false }: CurrentReadingCardProps) {
+  const profileHref = `/profiles/${item.ownerUserId}`;
+
   return (
     <article className="rounded-[28px] border border-white/80 bg-white/90 p-6 shadow-soft backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-panel">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <p className="text-xl font-semibold tracking-tight text-slate-950">{item.bookTitle}</p>
           <p className="text-sm leading-6 text-slate-500">
-            {item.ownerDisplayName} · {item.ownerUserId}
+            <Link className="font-medium text-slate-700 underline-offset-4 hover:text-slate-950 hover:underline" to={profileHref}>
+              {item.ownerDisplayName}
+            </Link>{' '}
+            · {item.ownerUserId}
           </p>
         </div>
-        <span className="rounded-full border border-slate-200 bg-slate-950 px-3 py-1 text-sm font-semibold text-white">
-          {item.rating}/5
-        </span>
+        <StarRatingDisplay rating={item.rating} className="rounded-full border border-slate-200 bg-slate-950 px-3 py-2" />
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-slate-500">

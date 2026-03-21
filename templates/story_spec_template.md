@@ -72,11 +72,19 @@ Example Output:
 ### Artifacts and External Specs
 
 
+---
+
 ## Frontend Requirements
 
 ### UI Design
 - <outline of the UI design with inline drawings of structure>
 
+---
+
+## Open Questions
+- <Any questions about the story that you would like to clarify before implementing the spec? List them here with recommended answers.>
+
+---
 
 ## Definition of Done Checklist
 

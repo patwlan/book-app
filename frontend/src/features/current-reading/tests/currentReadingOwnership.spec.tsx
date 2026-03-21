@@ -21,6 +21,7 @@ describe('CurrentReading ownership controls', () => {
 
     expect(screen.getByRole('button', { name: /edit/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /user one/i })).toHaveAttribute('href', '/profiles/user-1');
   });
 
   it('hides owner actions for non-owners', () => {
@@ -34,6 +35,7 @@ describe('CurrentReading ownership controls', () => {
 
     expect(screen.queryByRole('button', { name: /edit/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /another reader/i })).toHaveAttribute('href', '/profiles/user-2');
   });
 });
 

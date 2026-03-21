@@ -96,13 +96,13 @@ describe('CurrentReadingPage integration', () => {
     expect(await screen.findAllByText(/1 reader currently/i)).toHaveLength(2);
 
     await user.type(screen.getByLabelText(/book title/i), 'The Hobbit');
-    await user.clear(screen.getByLabelText(/rating/i));
-    await user.type(screen.getByLabelText(/rating/i), '5');
+    await user.click(screen.getByRole('radio', { name: /5 out of 5 stars/i }));
     await user.click(screen.getByRole('button', { name: /share current read/i }));
 
     await waitFor(() => expect(screen.getAllByText(/the hobbit/i)).toHaveLength(3));
     expect(screen.getByText(/saved your current read/i)).toBeInTheDocument();
     expect(screen.getByText(/2 readers currently/i)).toBeInTheDocument();
+    expect(screen.getAllByRole('img', { name: /5 out of 5 stars/i }).length).toBeGreaterThan(0);
   });
 });
 

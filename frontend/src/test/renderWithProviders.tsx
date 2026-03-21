@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from '../shared/auth/AuthProvider';
 
 export function renderWithProviders(ui: React.ReactElement, { userId = 'user-1', displayName = 'User One' } = {}) {
@@ -19,7 +20,9 @@ export function renderWithProviders(ui: React.ReactElement, { userId = 'user-1',
 
   const Wrapper = ({ children }: PropsWithChildren) => (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <MemoryRouter>{children}</MemoryRouter>
+      </AuthProvider>
     </QueryClientProvider>
   );
 

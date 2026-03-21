@@ -12,6 +12,7 @@ import java.time.Clock
 class UpdateOwnCurrentReadingPostUseCase(
     private val repository: CurrentReadingPostRepository,
     private val clock: Clock = Clock.systemUTC(),
+    private val bookHistoryRepository: CurrentReadingBookHistoryRepository = NoOpCurrentReadingBookHistoryRepository,
 ) {
     @Transactional
     fun execute(user: AuthenticatedUser, command: UpdateOwnCurrentReadingPostCommand): CurrentReadingPostView {
@@ -19,6 +20,7 @@ class UpdateOwnCurrentReadingPostUseCase(
             ?: throw CurrentReadingNotFoundException()
 
         val saved = repository.save(existing.update(command.bookTitle, command.rating, user.displayName, clock))
+        bookHistoryRepository.record(saved.ownerUserId, saved.ownerDisplayName, saved.bookTitle, saved.updatedAt)
         return saved.toView(user.userId)
     }
 }

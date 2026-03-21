@@ -11,6 +11,7 @@ import java.time.Clock
 class CreateOrReplaceCurrentReadingPostUseCase(
     private val repository: CurrentReadingPostRepository,
     private val clock: Clock = Clock.systemUTC(),
+    private val bookHistoryRepository: CurrentReadingBookHistoryRepository = NoOpCurrentReadingBookHistoryRepository,
 ) {
     @Transactional
     fun execute(user: AuthenticatedUser, command: CreateOrReplaceCurrentReadingPostCommand): CurrentReadingMutationResult {
@@ -19,12 +20,13 @@ class CreateOrReplaceCurrentReadingPostUseCase(
             existing?.replace(command.bookTitle, command.rating, user.displayName, clock)
                 ?: CurrentReadingPost.create(user.userId, user.displayName, command.bookTitle, command.rating, clock),
         )
+        bookHistoryRepository.record(saved.ownerUserId, saved.ownerDisplayName, saved.bookTitle, saved.updatedAt)
 
         return CurrentReadingMutationResult(saved.toView(user.userId), created = existing == null)
     }
 }
 
-internal fun com.bookapp.features.currentreading.domain.CurrentReadingPost.toView(currentUserId: String?): CurrentReadingPostView =
+internal fun CurrentReadingPost.toView(currentUserId: String?): CurrentReadingPostView =
     CurrentReadingPostView(
         postId = postId,
         bookTitle = bookTitle,

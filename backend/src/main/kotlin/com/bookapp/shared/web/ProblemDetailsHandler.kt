@@ -3,6 +3,8 @@ package com.bookapp.shared.web
 import com.bookapp.features.currentreading.application.CurrentReadingAuthorizationException
 import com.bookapp.features.currentreading.application.CurrentReadingNotFoundException
 import com.bookapp.features.currentreading.application.CurrentReadingValidationException
+import com.bookapp.features.profile.application.ProfileAuthorizationException
+import com.bookapp.features.profile.application.ProfileNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -51,6 +53,24 @@ class ProblemDetailsHandler {
             title = "Unauthorized",
             detail = exception.message ?: "Authentication is required.",
             errorCode = "CURRENT_READING_UNAUTHORIZED",
+        )
+
+    @ExceptionHandler(ProfileAuthorizationException::class)
+    fun handleProfileUnauthorized(exception: ProfileAuthorizationException): ResponseEntity<ProblemResponse> =
+        buildResponse(
+            status = HttpStatus.UNAUTHORIZED,
+            title = "Unauthorized",
+            detail = exception.message ?: "Authentication is required.",
+            errorCode = "PROFILE_UNAUTHORIZED",
+        )
+
+    @ExceptionHandler(ProfileNotFoundException::class)
+    fun handleProfileNotFound(exception: ProfileNotFoundException): ResponseEntity<ProblemResponse> =
+        buildResponse(
+            status = HttpStatus.NOT_FOUND,
+            title = "Profile not found",
+            detail = exception.message ?: "The requested profile does not exist.",
+            errorCode = "PROFILE_NOT_FOUND",
         )
 
     @ExceptionHandler(CurrentReadingNotFoundException::class)

@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { Controller } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
 import { useCurrentReadingForm } from '../hooks/useCurrentReadingForm';
 import type { CurrentReadingFormValues } from '../services/currentReadingFormSchema';
+import { StarRatingInput } from './StarRatingInput';
 
 type CurrentReadingFormProps = {
   mode: 'create' | 'edit';
@@ -70,23 +72,19 @@ export function CurrentReadingForm({
           ) : null}
         </div>
 
-        <div>
-          <label htmlFor="rating" className="mb-2 block text-sm font-medium text-slate-700">
-            Rating
-          </label>
-          <input
-            id="rating"
-            type="number"
-            min={1}
-            max={5}
-            {...form.register('rating', { valueAsNumber: true })}
-            className="input-field"
-          />
-          <p className="mt-2 text-sm text-slate-500">Use a scale from 1 to 5.</p>
-          {form.formState.errors.rating ? (
-            <p className="mt-2 text-sm text-rose-600">{form.formState.errors.rating.message}</p>
-          ) : null}
-        </div>
+        <Controller
+          control={form.control}
+          name="rating"
+          render={({ field, fieldState }) => (
+            <StarRatingInput
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              errorMessage={fieldState.error?.message}
+              disabled={form.formState.isSubmitting}
+            />
+          )}
+        />
       </div>
 
       {statusMessage ? (

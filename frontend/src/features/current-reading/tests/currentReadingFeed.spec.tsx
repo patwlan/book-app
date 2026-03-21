@@ -32,7 +32,31 @@ describe('CurrentReadingFeed', () => {
 
     expect(screen.getByText(/the left hand of darkness/i)).toBeInTheDocument();
     expect(screen.getByText(/ai reader/i)).toBeInTheDocument();
-    expect(screen.getByText(/4\/5/i)).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /4 out of 5 stars/i })).toBeInTheDocument();
+  });
+
+  it('shows a safe fallback when the feed contains an unexpected rating value', () => {
+    renderWithProviders(
+      <CurrentReadingFeed
+        items={[
+          {
+            postId: '1',
+            bookTitle: 'The Left Hand of Darkness',
+            rating: 9,
+            ownerUserId: 'user-2',
+            ownerDisplayName: 'Ai Reader',
+            postedAt: '2026-03-19T10:00:00Z',
+            updatedAt: '2026-03-19T10:00:00Z',
+            ownedByCurrentUser: false,
+          },
+        ]}
+        onEdit={() => undefined}
+        onDelete={() => undefined}
+      />,
+    );
+
+    expect(screen.getByText(/rating unavailable/i)).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: /out of 5 stars/i })).not.toBeInTheDocument();
   });
 });
 

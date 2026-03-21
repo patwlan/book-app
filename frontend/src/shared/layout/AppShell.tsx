@@ -8,6 +8,10 @@ const navigationItems = [
     end: true,
   },
   {
+    to: '/profiles',
+    label: 'Profiles',
+  },
+  {
     to: '/settings',
     label: 'Settings',
   },
@@ -22,10 +26,10 @@ export function AppShell({ children }: PropsWithChildren) {
             <div>
               <p className="section-kicker">Book App</p>
               <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
-                Current Reading Rating
+                Reading snapshots
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                A calm, focused space for sharing what the team is reading right now.
+                Track what the team is reading now, browse reader summaries, and manage your local owner context.
               </p>
             </div>
             <nav

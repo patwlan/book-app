@@ -2,9 +2,10 @@
 
 Book App is a feature-based web application with a React + Tailwind CSS frontend and a Kotlin +
 Spring Boot backend. The current implementation delivers the **Current Reading Rating** feature:
-users can post the book they are currently reading with a rating, browse the active feed, and
-edit or delete their own post. The main page also highlights the top three books currently being
-read in a hero panel, and the local owner context is managed from a dedicated settings page.
+users can post the book they are currently reading with an accessible five-star rating control,
+browse the active feed, and edit or delete their own post. The main page also highlights the top
+three books currently being read in a hero panel, the profiles feature lists known readers and
+their books-read totals, and the local owner context is managed from a dedicated settings page.
 
 ## Tech Stack
 
@@ -18,6 +19,7 @@ read in a hero panel, and the local owner context is managed from a dedicated se
 
 - `frontend/src/app/` contains the application shell and routing
 - `frontend/src/features/current-reading/` contains all current-reading-specific UI, hooks, services, state, and tests
+- `frontend/src/features/profile/` contains the profiles overview page, reader detail page, data access, state, and tests
 - `frontend/src/features/settings/` contains the owner-context settings page and related UI
 - `frontend/src/shared/` contains reusable HTTP, query, auth, and layout primitives
 
@@ -27,6 +29,7 @@ read in a hero panel, and the local owner context is managed from a dedicated se
 - `backend/src/main/kotlin/com/bookapp/features/currentreading/application/` contains use cases and repository ports
 - `backend/src/main/kotlin/com/bookapp/features/currentreading/infrastructure/` contains persistence and logging adapters
 - `backend/src/main/kotlin/com/bookapp/features/currentreading/web/` contains DTOs and REST controllers
+- `backend/src/main/kotlin/com/bookapp/features/profile/` contains the profiles overview and reader-detail use cases, query adapter, and REST controller
 - `backend/src/main/kotlin/com/bookapp/shared/` contains shared authentication, logging, time, and error-handling support
 
 ### Main Page Hero Panel
@@ -46,6 +49,13 @@ consistent, the application uses the following request headers as a minimal owne
 
 The frontend exposes these values through the owner-context form on the Settings page and
 automatically sends them with every API request.
+
+## Profiles Summary Semantics
+
+The profiles overview page and reader detail pages report the number of **distinct books recorded
+by a user through current-reading activity**. The count is cumulative across title changes and
+remains available even after the user's current active post is deleted. Reader names shown in the
+profiles feature come from the latest persisted display name known for that reader.
 
 ## Local Development CORS
 
@@ -120,12 +130,47 @@ The backend uses a self-bootstrapping `gradlew` script that downloads a local Gr
 when needed and prefers a macOS JDK 24 installation automatically.
 
 ## API Summary
-The canonical OpenAPI contract lives in `docs/api.yml`.
+The canonical OpenAPI contract lives in `docs/api.yml`. The frontend now renders star-based rating
+controls and feed badges, while the backend contract continues to accept and return a numeric
+integer `rating` from `1` to `5`. The backend also exposes profiles endpoints that return the
+reader summaries used by the `/profiles` overview and `/profiles/:userId` detail page.
+
+Example request for the profiles overview:
+
+```bash
+curl http://localhost:8080/api/v1/profiles
+```
+
+Example request for another reader's profile summary:
+
+```bash
+curl http://localhost:8080/api/v1/profiles/reader-22
+```
 
 Example request for the main-page featured books summary:
 
 ```bash
 curl http://localhost:8080/api/v1/current-reading-posts/featured
+```
+
+Example request for creating or replacing the active current-reading post:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/current-reading-posts \
+  -H 'Content-Type: application/json' \
+  -H 'X-User-Id: demo-user' \
+  -H 'X-User-Name: Demo User' \
+  -d '{"bookTitle":"The Left Hand of Darkness","rating":4}'
+```
+
+Example request for updating the active current-reading post:
+
+```bash
+curl -X PUT http://localhost:8080/api/v1/current-reading-posts/me \
+  -H 'Content-Type: application/json' \
+  -H 'X-User-Id: demo-user' \
+  -H 'X-User-Name: Demo User' \
+  -d '{"bookTitle":"The Dispossessed","rating":5}'
 ```
 
 ## Verified Commands
