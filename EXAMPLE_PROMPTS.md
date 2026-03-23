@@ -1,4 +1,8 @@
 
+# Example Prompts
+
+The following are example prompts for each step of the process.
+
 ## 1. Create Spec
 Use the story_spec_template.md to 
 write a story spec
