@@ -9,6 +9,14 @@
 > [SpecKit](https://github.com/github/spec-kit)
 
 
+> Interesting in Open Source and AI??
+> Please check out our open source projects and leave a star!
+> https://github.com/eclipse-lmos/arc
+> https://eclipse.dev/lmos/adl/index.html
+> Thank you!
+
+---
+
 ## Book App
 
 Book App is a feature-based web application with a React + Tailwind CSS frontend and a Kotlin +
