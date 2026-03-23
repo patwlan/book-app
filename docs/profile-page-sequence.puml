@@ -1,0 +1,21 @@
+@startuml
+actor Reader
+participant Frontend as "Profiles Page"
+participant Detail as "Profile Detail Page"
+participant Backend as "Profiles API"
+participant History as "user_book_reads"
+
+Reader -> Frontend: Open /profiles
+Frontend -> Backend: GET /api/v1/profiles
+Backend -> History: List known reader summaries
+History --> Backend: [{ userId, displayName, booksReadCount }]
+Backend --> Frontend: ProfilesResponse
+Frontend --> Reader: Render reader summary cards
+
+Reader -> Detail: Open /profiles/reader-22
+Detail -> Backend: GET /api/v1/profiles/reader-22
+Backend -> History: Resolve latest display name + count for reader-22
+History --> Backend: displayName + booksReadCount or none
+Backend --> Detail: Profile summary or 404
+Detail --> Reader: Render reader detail or not-found state
+@enduml

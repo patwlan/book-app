@@ -1,0 +1,35 @@
+@startuml
+class CurrentReadingFormValues {
+  +String bookTitle
+  +int rating
+}
+
+class StarRatingControlState {
+  +int selectedRating
+  +int filledStars
+  +int emptyStars
+  +String accessibleRatingLabel
+}
+
+class CurrentReadingPostResponse {
+  +UUID postId
+  +String ownerUserId
+  +String ownerDisplayName
+  +String bookTitle
+  +int rating
+  +Instant postedAt
+  +Instant updatedAt
+  +boolean ownedByCurrentUser
+}
+
+class CurrentReadingCardView {
+  +String bookTitle
+  +String accessibleRatingLabel
+  +String defensiveFallbackLabel
+}
+
+CurrentReadingFormValues --> StarRatingControlState : drives selection UI
+CurrentReadingFormValues --> CurrentReadingPostResponse : submitted unchanged to API
+CurrentReadingPostResponse --> CurrentReadingCardView : rendered as stars or safe fallback
+@enduml
+

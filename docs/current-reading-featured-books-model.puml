@@ -1,0 +1,25 @@
+@startuml
+class CurrentReadingPost {
+  +UUID postId
+  +String ownerUserId
+  +String ownerDisplayName
+  +String bookTitle
+  +int rating
+  +Instant postedAt
+  +Instant updatedAt
+}
+
+class ActiveCurrentReadingTitleView {
+  +String bookTitle
+}
+
+class FeaturedCurrentReadView {
+  +int rank
+  +String bookTitle
+  +int readerCount
+}
+
+CurrentReadingPost --> ActiveCurrentReadingTitleView : projects title
+ActiveCurrentReadingTitleView --> FeaturedCurrentReadView : aggregates and ranks
+@enduml
+

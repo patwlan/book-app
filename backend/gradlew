@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+GRADLE_VERSION=8.13
+DIST_DIR="$SCRIPT_DIR/.gradle-dist"
+GRADLE_HOME="$DIST_DIR/gradle-$GRADLE_VERSION"
+ARCHIVE="$DIST_DIR/gradle-$GRADLE_VERSION-bin.zip"
+
+if command -v /usr/libexec/java_home >/dev/null 2>&1; then
+  JAVA_21_HOME=$(/usr/libexec/java_home -v 21 2>/dev/null || true)
+  if [ -n "${JAVA_21_HOME:-}" ]; then
+    export JAVA_HOME="$JAVA_21_HOME"
+    export PATH="$JAVA_HOME/bin:$PATH"
+  fi
+fi
+
+if [ ! -x "$GRADLE_HOME/bin/gradle" ]; then
+  mkdir -p "$DIST_DIR"
+  if [ ! -f "$ARCHIVE" ]; then
+    curl -fsSL "https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip" -o "$ARCHIVE"
+  fi
+  unzip -q -o "$ARCHIVE" -d "$DIST_DIR"
+fi
+
+exec "$GRADLE_HOME/bin/gradle" "$@"
+

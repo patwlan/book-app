@@ -1,0 +1,22 @@
+@startuml
+class UserBookRead {
+  +String ownerUserId
+  +String normalizedBookTitle
+  +String ownerDisplayName
+  +Instant firstRecordedAt
+  +Instant lastRecordedAt
+}
+
+class ProfileSummaryView {
+  +String userId
+  +String displayName
+  +int booksReadCount
+}
+
+class ProfilesResponse {
+  +List<ProfileSummaryView> items
+}
+
+UserBookRead --> ProfileSummaryView : counts distinct titles and resolves latest display name
+ProfilesResponse --> ProfileSummaryView : contains overview items
+@enduml
