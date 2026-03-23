@@ -161,6 +161,8 @@ Profiles Page
 +-----------------------------------------------------------+
 ```
 
+---
+
 ## Open Questions
 - What exactly should `booksReadCount` represent?
   - Use the total number of books a reader has read in Book App, not the current active reading post count.
